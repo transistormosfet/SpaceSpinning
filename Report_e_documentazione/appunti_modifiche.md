@@ -37,3 +37,6 @@ Implementata la gestione di un DAC esterno MCP4725 per pilotare generatore Hv
   
 # Versione 7.7  
 Implementata gestione esterna pwm per pilotare i servomotori con modulo pca9685  
+
+# Versione 7.8  
+aggiunto il parametro numero prova in logdata   
