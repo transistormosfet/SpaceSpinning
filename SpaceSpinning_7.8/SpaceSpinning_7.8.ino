@@ -181,7 +181,7 @@ void loop() {
   if (millis() - tdata > 6000) {                                            //ogni minuto = 60000ms
     tdata = millis();                                                       //resetta variabile servizio
     DateTime now = rtc.now();                                               //preleva info da RTC
-    logdata(now, temperatura, umidita, inizio, portata, voltaggio,n);                                  //usa funzione ausiliaria logdata per incamerare data, temp,hum
+    logdata(now, temperatura, umidita, inizio, portata, voltaggio, n);                                 //usa funzione ausiliaria logdata per incamerare data, temp,hum
   }
 
   /*
@@ -353,68 +353,68 @@ void logdata(DateTime now, float t, float h, bool in, float Q, float v, int n ) 
     "V: " + "\t" + String(v) + "\t" + " kV"
     "n: " + "\t" + String(n);
 
-    logfile = SD.open("thlog.txt", FILE_WRITE);                               //apri il file in modalita scrittura e chiamalo thlog.txt (nomi corti max 6 caratteri altrimanti non funziona)
-    if (logfile) {                                                            //se logfile OK
+  logfile = SD.open("thlog.txt", FILE_WRITE);                               //apri il file in modalita scrittura e chiamalo thlog.txt (nomi corti max 6 caratteri altrimanti non funziona)
+  if (logfile) {                                                            //se logfile OK
     logfile.println(msg);                                                   //inserisci su nuova riga la stringa msg
     logfile.close();                                                        //chiudi il file (OBBLIGATORIO)
   }
-  }
+}
 
-    /*
-    funzione ausiliaria di padding
-    */
-    String pad(int a) {                                                         //restituisci una stringa input numero a
-    String ret = "";                                                          //forma una stringa nome ret
-    if (a < 10) ret = "0" + String(a);                                        //se il numero ha 1 cifra cioè <10 aggiungi uno 0 davanti ad a
-    else ret = String(a);                                                     //altrimenti lascia stare
-    return ret;                                                               //restituisci stringa
-  }
+/*
+  funzione ausiliaria di padding
+*/
+String pad(int a) {                                                         //restituisci una stringa input numero a
+  String ret = "";                                                          //forma una stringa nome ret
+  if (a < 10) ret = "0" + String(a);                                        //se il numero ha 1 cifra cioè <10 aggiungi uno 0 davanti ad a
+  else ret = String(a);                                                     //altrimenti lascia stare
+  return ret;                                                               //restituisci stringa
+}
 
-    /*
-    -----------gestione avanzamento veloce pompa------------------------
-    */
-    void fast_forward() {
-    digitalWrite(11,HIGH);
-    digitalWrite(12,HIGH);
-    digitalWrite(12,LOW);
-  }
+/*
+  -----------gestione avanzamento veloce pompa------------------------
+*/
+void fast_forward() {
+  digitalWrite(11, HIGH);
+  digitalWrite(12, HIGH);
+  digitalWrite(12, LOW);
+}
 
-    void fast_rewind() {
-    digitalWrite(11,LOW);
-    digitalWrite(12,HIGH);
-    digitalWrite(12,LOW);
-  }
+void fast_rewind() {
+  digitalWrite(11, LOW);
+  digitalWrite(12, HIGH);
+  digitalWrite(12, LOW);
+}
 
-    /*
-    -----------gestione avanzamento nastro------------------------
-    */
-    void nastro() {
-    while (i <= x) {                                                      //i contatore di steps
+/*
+  -----------gestione avanzamento nastro------------------------
+*/
+void nastro() {
+  while (i <= x) {                                                      //i contatore di steps
     if (((millis() - tstep) > 2)) {                                    //esegui ogni 2 ms
-    tstep = millis();                                                 //resetta variabile ausiliaria
-    i++;                                                              //incrementa i di 1
-    digitalWrite(13,HIGH);                                             //gira in senso orario di 1 step per volta;
-    digitalWrite(9,HIGH);
-    digitalWrite(9,LOW);
+      tstep = millis();                                                 //resetta variabile ausiliaria
+      i++;                                                              //incrementa i di 1
+      digitalWrite(13, HIGH);                                            //gira in senso orario di 1 step per volta;
+      digitalWrite(9, HIGH);
+      digitalWrite(9, LOW);
+    }
   }
-  }
-    i = 0;                                                                //finito il ciclo azzera contatore
-  }
-    /*
-    funzione per regolazione portata pompa
-    */
-    void pompa(float flow) {
-    if (!(flow == 0)) {
+  i = 0;                                                                //finito il ciclo azzera contatore
+}
+/*
+  funzione per regolazione portata pompa
+*/
+void pompa(float flow) {
+  if (!(flow == 0)) {
 
     if (primerrimavolta) { // così ci entra una sola volta e lancia il timer una volta sola. Verrà poi stoppato quando sarà chiamato pompa(0)
-    pausapasso = ((volumestep / (flow)) * 3600000000)/16; // il diviso 16 è dovuto al clock utilizzato
-    startTimer1(pausapasso); //lancia il timer
-    primerrimavolta = false;
-  }
+      pausapasso = ((volumestep / (flow)) * 3600000000) / 16; // il diviso 16 è dovuto al clock utilizzato
+      startTimer1(pausapasso); //lancia il timer
+      primerrimavolta = false;
+    }
     //se flow == 0 non azionare la pompa
     //unsigned long pausapasso = volumestep / (flow / 3600000);           // t= Volume di 1 step/Q.|.Q in mL/ms e Volume di 1 step in mL
   }
-    else {
+  else {
     TCCR1B = 0;//stop timer
     TCNT1 = 0;//clear timer counts//se pompa(0)
     digitalWrite(11, HIGH);
@@ -423,37 +423,37 @@ void logdata(DateTime now, float t, float h, bool in, float Q, float v, int n ) 
     primerrimavolta = true; //resetto
 
   }
-  }
+}
 
-    void startTimer1(unsigned long current_period)  //https://electronoobs.com/eng_arduino_tut140.php
-    {
-    cli();
-    TCCR1A = 0;
-    TCCR1B = 0;
-    TCCR1B |= B00000100;
-    TIMSK1 |= B00000010;
-    OCR1A = current_period;
-    sei();
-  }
-    ISR(TIMER1_COMPA_vect)   // https://electronoobs.com/eng_arduino_tut140.php
-    {
-    TCNT1  = 0;
-    digitalWrite(11, HIGH);
-    digitalWrite(12, HIGH);
-    digitalWrite(12, LOW);
-  }
+void startTimer1(unsigned long current_period)  //https://electronoobs.com/eng_arduino_tut140.php
+{
+  cli();
+  TCCR1A = 0;
+  TCCR1B = 0;
+  TCCR1B |= B00000100;
+  TIMSK1 |= B00000010;
+  OCR1A = current_period;
+  sei();
+}
+ISR(TIMER1_COMPA_vect)   // https://electronoobs.com/eng_arduino_tut140.php
+{
+  TCNT1  = 0;
+  digitalWrite(11, HIGH);
+  digitalWrite(12, HIGH);
+  digitalWrite(12, LOW);
+}
 
-    /*
-    STATI DELLO SWITCH E CAMBIO STATO
-    */
-    void setStato(int s) {                                                  //funzione di comodo per passare da uno stato all'altro
-    stato = s;                                                            //impone lo stato desiderato
-    first = true;                                                         //resetta la flag first imponendola true
-    lcd.clear();                                                          //ripulisci LCD
-  }
+/*
+  STATI DELLO SWITCH E CAMBIO STATO
+*/
+void setStato(int s) {                                                  //funzione di comodo per passare da uno stato all'altro
+  stato = s;                                                            //impone lo stato desiderato
+  first = true;                                                         //resetta la flag first imponendola true
+  lcd.clear();                                                          //ripulisci LCD
+}
 
-    void S0() {
-    if (first) {                                                          //se è la prima volta che entri in questo menù scrivi le etichette
+void S0() {
+  if (first) {                                                          //se è la prima volta che entri in questo menù scrivi le etichette
     lcd.setCursor(0, 0);
     lcd.print("N TESTS         ");                                      //gli spazzi servono per ripulire la riga da eventuali caratteri rimanenti
     lcd.setCursor(0, 1);
@@ -461,21 +461,21 @@ void logdata(DateTime now, float t, float h, bool in, float Q, float v, int n ) 
     lcd.print("NEXT       > SET");
     first = false;                                                      //cambia il flag per far capire che hai già scritto le etichete
   }
-    /*
+  /*
     leggi i bottoni e muoviti di conseguenza tra gli stati
-    */
-    if ((digitalRead(A1) == 1) && (millis() - t0 > tde)) {                //se spingi bottone basso -> stato = 10
+  */
+  if ((digitalRead(A1) == 1) && (millis() - t0 > tde)) {                //se spingi bottone basso -> stato = 10
     t0 = millis();
     setStato(10);
   }
-    if ((digitalRead(A2) == 1) && (millis() - t0 > tde) ) {               //se spingi bottone destra -> stato = 1
+  if ((digitalRead(A2) == 1) && (millis() - t0 > tde) ) {               //se spingi bottone destra -> stato = 1
     t0 = millis();
     setStato(1);
   }
-  };
+};
 
-    void S10() {
-    if (first) {                                                          //se è la prima volta che entri in questo menù scrivi le etichette
+void S10() {
+  if (first) {                                                          //se è la prima volta che entri in questo menù scrivi le etichette
     lcd.setCursor(0, 0);
     lcd.print("time            ");                                      //gli spazzi servono per ripulire la riga da eventuali caratteri rimanenti
     lcd.setCursor(0, 1);
@@ -483,21 +483,21 @@ void logdata(DateTime now, float t, float h, bool in, float Q, float v, int n ) 
     lcd.print("NEXT       > SET");
     first = false;                                                      //cambia il flag per far capire che hai già scritto le etichete
   }
-    /*
+  /*
     leggi i bottoni e muoviti di conseguenza tra gli stati
-    */
-    if ((digitalRead(A1) == 1) && (millis() - t0 > tde)) {                //se spingi bottone basso -> stato = 20
+  */
+  if ((digitalRead(A1) == 1) && (millis() - t0 > tde)) {                //se spingi bottone basso -> stato = 20
     t0 = millis();
     setStato(20);
   }
-    if ((digitalRead(A2) == 1) && (millis() - t0 > tde) ) {               //se spingi bottone destra -> stato = 2
+  if ((digitalRead(A2) == 1) && (millis() - t0 > tde) ) {               //se spingi bottone destra -> stato = 2
     t0 = millis();
     setStato(2);
   }
-  };
+};
 
-    void S20() {
-    if (first) {                                                          //se è la prima volta che entri in questo menù scrivi le etichette
+void S20() {
+  if (first) {                                                          //se è la prima volta che entri in questo menù scrivi le etichette
     lcd.setCursor(0, 0);
     lcd.print("HVreg           ");                                      //gli spazzi servono per ripulire la riga da eventuali caratteri rimanenti
     lcd.setCursor(0, 1);
@@ -505,21 +505,21 @@ void logdata(DateTime now, float t, float h, bool in, float Q, float v, int n ) 
     lcd.print("NEXT       > SET");
     first = false;                                                      //cambia il flag per far capire che hai già scritto le etichete
   }
-    /*
+  /*
     leggi i bottoni e muoviti di conseguenza tra gli stati
-    */
-    if ((digitalRead(A1) == 1) && (millis() - t0 > tde)) {                //se spingi bottone basso -> stato = 30
+  */
+  if ((digitalRead(A1) == 1) && (millis() - t0 > tde)) {                //se spingi bottone basso -> stato = 30
     t0 = millis();
     setStato(30);
   }
-    if ((digitalRead(A2) == 1) && (millis() - t0 > tde) ) {               //se spingi bottone destra -> stato = 3
+  if ((digitalRead(A2) == 1) && (millis() - t0 > tde) ) {               //se spingi bottone destra -> stato = 3
     t0 = millis();
     setStato(3);
   }
-  };
+};
 
-    void S30() {
-    if (first) {                                                          //se è la prima volta che entri in questo menù scrivi le etichette
+void S30() {
+  if (first) {                                                          //se è la prima volta che entri in questo menù scrivi le etichette
     lcd.setCursor(0, 0);
     lcd.print("FLOW            ");                                      //gli spazzi servono per ripulire la riga da eventuali caratteri rimanenti
     lcd.setCursor(0, 1);
@@ -527,20 +527,20 @@ void logdata(DateTime now, float t, float h, bool in, float Q, float v, int n ) 
     lcd.print("NEXT       > SET");
     first = false;                                                      //cambia il flag per far capire che hai già scritto le etichete
   }
-    /*
+  /*
     leggi i bottoni e muoviti di conseguenza tra gli stati
-    */
-    if ((digitalRead(A1) == 1) && (millis() - t0 > tde)) {                //se spingi bottone basso -> stato = 40
+  */
+  if ((digitalRead(A1) == 1) && (millis() - t0 > tde)) {                //se spingi bottone basso -> stato = 40
     t0 = millis();
     setStato(40);
   }
-    if ((digitalRead(A2) == 1) && (millis() - t0 > tde) ) {               //se spingi bottone destra -> stato = 4
+  if ((digitalRead(A2) == 1) && (millis() - t0 > tde) ) {               //se spingi bottone destra -> stato = 4
     t0 = millis();
     setStato(4);
   }
-  };
-    void S40() {
-    if (first) {                                                          //se è la prima volta che entri in questo menù scrivi le etichette
+};
+void S40() {
+  if (first) {                                                          //se è la prima volta che entri in questo menù scrivi le etichette
     lcd.setCursor(0, 0);
     lcd.print(" START SEQUENCE ? ");                                      //gli spazzi servono per ripulire la riga da eventuali caratteri rimanenti
     lcd.setCursor(0, 1);
@@ -548,318 +548,318 @@ void logdata(DateTime now, float t, float h, bool in, float Q, float v, int n ) 
     lcd.print("NEXT     > START");
     first = false;                                                      //cambia il flag per far capire che hai già scritto le etichete
   }
-    /*
+  /*
     leggi i bottoni e muoviti di conseguenza tra gli stati
-    */
-    if ((digitalRead(A1) == 1) && (millis() - t0 > tde)) {                //se spingi bottone basso -> stato = 0
+  */
+  if ((digitalRead(A1) == 1) && (millis() - t0 > tde)) {                //se spingi bottone basso -> stato = 0
     t0 = millis();
     setStato(0);
   }
-    if ((digitalRead(A2) == 1) && (millis() - t0 > tde) ) {               //se spingi bottone destra -> stato = 5
+  if ((digitalRead(A2) == 1) && (millis() - t0 > tde) ) {               //se spingi bottone destra -> stato = 5
     t0 = millis();
     setStato(5);
     inizio = true;                                                      //tag inizio sequenza elettrofilatura ON
     if (!pausa)tstart = millis();                                                 //segna tempo di partenza filatura (se non rientri da una pausa)
     if (pausa) {                                                        //se rientri da una pausa
-    pausa = false;                                                    //azzera il tag pausa
-    tpausafin = millis();                                             //memorizza il tempo fine pausa
-    deltapausa = (deltapausa + (tpausafin - tpausain));               //calcola la pausa aggiuntiva che hai fatto da quando sei uscito da S5,S6,S7 premendo il bottone a sx
+      pausa = false;                                                    //azzera il tag pausa
+      tpausafin = millis();                                             //memorizza il tempo fine pausa
+      deltapausa = (deltapausa + (tpausafin - tpausain));               //calcola la pausa aggiuntiva che hai fatto da quando sei uscito da S5,S6,S7 premendo il bottone a sx
+    }
   }
-  }
-  };
-    void S1() {
-    if (first) {
+};
+void S1() {
+  if (first) {
     lcd.setCursor(0, 0);
     lcd.print("N =              ");
-                                lcd.setCursor(0, 1);
-                                lcd.write((byte)1);                                                 //freccia alto
-                                lcd.print(" + ");
-                                lcd.write((byte)0);                                                 //freccia basso
-                                lcd.print(" -       < SET");
-                                first = false;
-                              }
-                                if ((digitalRead(A3) == 1) && (millis() - t0 > tde)) {                //se spingi bottone sinistra -> stato = 0
-                                t0 = millis();
-                                setStato(0);
-                              }
-                                if ((digitalRead(A0) == 1) && (millis() - t0 > tde)) {                //se spingi alto -> incrementa N
-                                t0 = millis();
-                                N++;
-                              }
-                                if ((digitalRead(A1) == 1) && (millis() - t0 > tde)) {                //se spingi basso && debounce -> decrementa tempo iniziale timer 2
-                                t0 = millis();
-                                N--;
-                              }                                                                     //il parametro N diventa ciclico
-                                if (N > NMAX) {
-                                N = 0;
-                              }
-                                if (N < 0) {
-                                N = NMAX;
-                              }
-                                lcd.setCursor(3, 0);
-                                lcd.print(N);
-                                lcd.print("            ");
-                              };
-                                void S2() {
-                                if (first) {
-                                lcd.setCursor(0, 0);
-                                lcd.print("t =     s");
-                                    lcd.setCursor(0, 1);
-                                    lcd.write((byte)1);                                                 //freccia alto
-                                    lcd.print(" + ");
-                                    lcd.write((byte)0);
-                                    lcd.print(" -       < SET");
-                                    first = false;
-                                  }
-                                    if ((digitalRead(A0) == 1) && (millis() - t0 > tde)) {                //se spingi bottone up -> incrementa tempo
-                                    t0 = millis();
-                                    tempo = tempo + passi;
-                                  }
-                                    if ((digitalRead(A1) == 1) && (millis() - t0 > tde) ) {               //se spingi bottone basso -> decrementa tempo
-                                    t0 = millis();
-                                    tempo = tempo - passi;
-                                  }
-                                    if ((digitalRead(A3) == 1) && (millis() - t0 > tde)) {                //se spingi bottone sinistra -> stato S10
-                                    t0 = millis();
-                                    setStato(10);
-                                  }                                                                             //il parametro tempo diventa ciclico
-                                    if (tempo >= (tempoMAX + passi) && (tempo < (tempoMAX + passi + passi))) {    //compreso nel primo segmento vicino al tempoMAX
-                                    tempo = 0;
-                                  }
-                                    if (tempo <= (4294967296 - passi) && (tempo > (4294967296 - passi - passi))) {  //compreso nel primo segmento vicino al massimo di unsigned long (4294967296)
-                                    tempo = tempoMAX;
-                                  }
-                                    lcd.setCursor(2, 0);
-                                    lcd.print(tempo);
-                                    lcd.print("s");
-                                    lcd.print("                ");
-                                  };
-                                    void S3() {
-                                    if (first) {                                                          //se è la prima volta che entri in questo menù scrivi le etichette
-                                    lcd.setCursor(0, 0);
-                                    lcd.print("Hv =    kV         ");
-                                        lcd.setCursor(0, 1);
-                                        lcd.write((byte)1);                                                 //freccia alto
-                                        lcd.print(" + ");
-                                        lcd.write((byte)0);
-                                        lcd.print(" -  > dV  < SET");
-                                        first = false;
-                                      }
-                                        /*
-                                        leggi i bottoni e muoviti di conseguenza negli sati
-                                        */
-                                        if ((digitalRead(A2) == 1) && (millis() - t0 > tde)) {                //se spingi bottone destra -> stato = 8
-                                        t0 = millis();
-                                        setStato(8);
-                                      }
-                                        if ((digitalRead(A3) == 1) && (millis() - t0 > tde) ) {               //se spingi bottone sinistra -> stato = 20
-                                        t0 = millis();
-                                        setStato(20);
-                                      }
-                                        if ((digitalRead(A0) == 1) && (millis() - t0 > tde)) {                //se spingi alto -> incrementa voltaggio
-                                        t0 = millis();
-                                        voltaggio = voltaggio + 0.5;
-                                      }
-                                        if ((digitalRead(A1) == 1) &&  (millis() - t0 > tde)) { //se spingi basso && debounce -> decrementa voltaggio
-                                        t0 = millis();
-                                        voltaggio = voltaggio - 0.5;
-                                      }                                                                     //il parametro voltaggio diventa ciclico
-                                        if (voltaggio > voltaggioMAX) {
-                                        voltaggio = 0;
-                                      }
-                                        if (voltaggio < 0) {
-                                        voltaggio = voltaggioMAX;
-                                      }
-                                        lcd.setCursor(4, 0);                                                  //riaggiorna di continuo la variabile temporale lasciando immutate le etichette scritte la prima volta che sei entrato in questo menù
-                                        lcd.print(voltaggio);
-                                        lcd.print(" kV");
-                                        lcd.print("                ");
-                                      };
-                                        void S8() {
-                                        if (first) {
-                                        lcd.setCursor(0, 0);
-                                        lcd.print("dV =    kV       ");
-                                            lcd.setCursor(0, 1);
-                                            lcd.write((byte)1);                                                 //freccia alto
-                                            lcd.print(" + ");
-                                            lcd.write((byte)0);
-                                            lcd.print(" -  > Hv  < SET");
-                                            first = false;
-                                          }
-                                            if ((digitalRead(A2) == 1) && (millis() - t0 > tde)) {                //se spingi bottone destra -> stato = 3
-                                            t0 = millis();
-                                            setStato(3);
-                                          }
-                                            if ((digitalRead(A3) == 1) && (millis() - t0 > tde) ) {               //se spingi bottone sinistra -> stato = 20
-                                            t0 = millis();
-                                            setStato(20);
-                                          }
-                                            if ((digitalRead(A0) == 1) && (millis() - t0 > tde)) {                //se spingi alto -> incrementa dV
-                                            t0 = millis();
-                                            dvoltaggio = dvoltaggio + 0.01;
-                                          }
-                                            if ((digitalRead(A1) == 1) && (millis() - t0 > tde)) {                //se spingi basso -> decrementa dV
-                                            t0 = millis();
-                                            dvoltaggio = dvoltaggio - 0.01;
-                                          }
-                                            if (dvoltaggio <= 0) {                                                //non far diventare negativo dV
-                                            dvoltaggio = 0;
-                                          }
-                                            lcd.setCursor(4, 0);
-                                            lcd.print(dvoltaggio);
-                                            lcd.print(" kV");
-                                            lcd.print("                ");
-                                          };
-                                            void S4() {
-                                            if (first) {
-                                            lcd.setCursor(0, 0);
-                                            lcd.print("Q =    mL / h");
-                                                lcd.setCursor(0, 1);
-                                                lcd.write((byte)1);                                                   //freccia alto
-                                                lcd.print(" + ");
-                                                lcd.write((byte)0);
-                                                lcd.print(" -  > dQ  < SET");
-                                                first = false;
-                                              }
-                                                if ((digitalRead(A2) == 1) && (millis() - t0 > tde)) {                  //se spingi bottone destra -> stato = 9
-                                                t0 = millis();
-                                                setStato(9);
-                                              }
-                                                if ((digitalRead(A3) == 1) && (millis() - t0 > tde) ) {                 //se spingi bottone sinistra -> stato = 30
-                                                t0 = millis();
-                                                setStato(30);
-                                              }
-                                                if ((digitalRead(A0) == 1) && (millis() - t0 > tde)) {                  //se spingi alto -> incrementa portata
-                                                t0 = millis();
-                                                portata = portata + 0.01;
-                                              }
-                                                if ((digitalRead(A1) == 1) && (millis() - t0 > tde)) {                  //se spingi basso -> decrementa portata
-                                                t0 = millis();
-                                                portata = portata - 0.01;
-                                              }
-                                                if (portata < 0) {                                                      //non far diventare la portata negativa
-                                                portata = 0;
-                                              }
-                                                lcd.setCursor(2, 0);
-                                                lcd.print(portata);
-                                                lcd.print("mL / h");
-                                                lcd.print("                ");
-                                              };
-                                                void S9() {
-                                                if (first) {                                                            //se è la prima volta che entri in questo menù scrivi le etichette
-                                                lcd.setCursor(0, 0);
-                                                lcd.print("dQ =   mL / h      ");
-                                                    lcd.setCursor(0, 1);
-                                                    lcd.write((byte)1);                                                   //freccia alto
-                                                    lcd.print(" + ");
-                                                    lcd.write((byte)0);
-                                                    lcd.print(" -  > Q   < SET");
-                                                    first = false;
-                                                  }
-                                                    if ((digitalRead(A2) == 1) && (millis() - t0 > tde)) {                  //se spingi bottone destra -> stato = 4
-                                                    t0 = millis();
-                                                    setStato(4);
-                                                  }
-                                                    if ((digitalRead(A3) == 1) && (millis() - t0 > tde)) {                  //se spingi bottone sinistra -> stato = 30
-                                                    t0 = millis();
-                                                    setStato(30);
-                                                  }
-                                                    if ((digitalRead(A1) == 1) && (millis() - t0 > tde) ) {                 //se spingi bottone basso -> decrementa dQ
-                                                    t0 = millis();
-                                                    dportata = dportata - 0.01;
-                                                  }
-                                                    if ((digitalRead(A0) == 1) && (millis() - t0 > tde) ) {                 //se spingi bottone alto -> incrementa dQ
-                                                    t0 = millis();
-                                                    dportata = dportata + 0.01;
-                                                  }
-                                                    if (dportata < 0) dportata = 0;                                         //non far andare dQ negativa
-                                                    lcd.setCursor(3, 0);                                                    //riaggiorna di continuo la variabile dQ lasciando immutate le etichette scritte la prima volta che sei entrato in questo menù
-                                                    lcd.print(dportata);
-                                                    lcd.print("mL / h");
-                                                    lcd.print("                ");
-                                                  };
-                                                    void S5() {
-                                                    if (first) {
-                                                    lcd.setCursor(0, 0);
-                                                    lcd.print("T =     C H =    % ");
-                                                        lcd.setCursor(0, 1);
-                                                        lcd.print(" < PAUSE     NEXT");
-                                                        lcd.write((byte)0);                                                   //freccia basso
-                                                        first = false;
-                                                      }
-                                                        if ((digitalRead(A3) == 1) && (millis() - t0 > tde)) {                  //se spingi bottone sinistra -> stato = 40
-                                                        t0 = millis();
-                                                        inizio = false;                                                       //azzera tag processo filatura
-                                                        pausa = true;                                                         //inizia la pausa
-                                                        tpausain = millis();                                                  //registra il tempo iniziale di pausa
-                                                        pompa(0);                                                             //SPEGNI POMPA
-                                                        analogWrite(6, 0);                                                    //spegni alta tensione
-                                                        setStato(40);
-                                                      }
-                                                        if ((digitalRead(A1) == 1) && (millis() - t0 > tde) ) {                 //se spingi bottone basso -> stato = 6
-                                                        t0 = millis();
-                                                        setStato(6);
-                                                      }
-                                                        lcd.setCursor(2, 0);
-                                                        lcd.print(temperatura);
-                                                        lcd.print("C H = ");
-                                                            lcd.print(umidita);                                                     //scritto male di proposito NON CAMBIARE
-                                                            lcd.print(" % ");
-                                                            lcd.print("                ");
-                                                          };
-                                                            void S6() {
-                                                            if (first) {
-                                                            lcd.setCursor(0, 0);
-                                                            lcd.print("Hv =   kV Q =     ");
-                                                                lcd.setCursor(0, 1);
-                                                                lcd.print(" < PAUSE     NEXT");
-                                                                lcd.write((byte)0);                                                   //freccia basso
-                                                                first = false;
-                                                              }
-                                                                if ((digitalRead(A3) == 1) && (millis() - t0 > tde)) {                  //se spingi bottone sinistra -> stato = 40
-                                                                t0 = millis();
-                                                                inizio = false;                                                       //azzera tag processo filatura
-                                                                pausa = true;
-                                                                tpausain = millis();                                                  //registra il tempo iniziale di pausa
-                                                                pompa(0);                                                             //SPEGNI POMPA
-                                                                analogWrite(6, 0);                                                    //spegni alta tensione
-                                                                setStato(40);
-                                                              }
-                                                                if ((digitalRead(A1) == 1) && (millis() - t0 > tde) ) {                 //se spingi bottone basso -> stato = 7
-                                                                t0 = millis();
-                                                                setStato(7);
-                                                              }
-                                                                lcd.setCursor(2, 0);
-                                                                lcd.print(((n * dvoltaggio) + voltaggio));                              //voltaggio attuale tenendo conto dell'incremento della prova in svolgimento
-                                                                lcd.print("kV Q");
-                                                                lcd.print(((n * dportata) + portata));                                  //scritto male di proposito NON CAMBIARE
-                                                                lcd.print("                ");
-                                                              };
-                                                                void S7() {
-                                                                if (first) {
-                                                                lcd.setCursor(0, 0);
-                                                                lcd.print("N =      t =     s");
-                                                                    lcd.setCursor(0, 1);
-                                                                    lcd.print(" < PAUSE     NEXT");
-                                                                    lcd.write((byte)0);                                                   //freccia basso
-                                                                    first = false;
-                                                                  }
-                                                                    if ((digitalRead(A3) == 1) && (millis() - t0 > tde)) {                  //se spingi bottone sinistra -> stato = 40
-                                                                    t0 = millis();
-                                                                    inizio = false;                                                       //pausa elettrofilatura
-                                                                    pausa = true;                                                         //inizia la pausa
-                                                                    tpausain = millis();                                                  //registra il tempo iniziale di pausa
-                                                                    pompa(0);                                                             //SPEGNI POMPA
-                                                                    analogWrite(6, 0);
-                                                                    setStato(40);
-                                                                  }
-                                                                    if ((digitalRead(A1) == 1) && (millis() - t0 > tde) ) {                 //se spingi bottone basso -> stato = 5
-                                                                    t0 = millis();
-                                                                    setStato(5);
-                                                                  }
-                                                                    lcd.setCursor(3, 0);
-                                                                    lcd.print(n);                                                           //n prova in svolgimento
-                                                                    lcd.print("    t = ");
-                                                                        lcd.print(VARtempo);                                                    //tempo di elettrofilatura che avanza
-                                                                        lcd.print(" s               ");
-                                                                      };
+    lcd.setCursor(0, 1);
+    lcd.write((byte)1);                                                 //freccia alto
+    lcd.print(" + ");
+    lcd.write((byte)0);                                                 //freccia basso
+    lcd.print(" -       < SET");
+    first = false;
+  }
+  if ((digitalRead(A3) == 1) && (millis() - t0 > tde)) {                //se spingi bottone sinistra -> stato = 0
+    t0 = millis();
+    setStato(0);
+  }
+  if ((digitalRead(A0) == 1) && (millis() - t0 > tde)) {                //se spingi alto -> incrementa N
+    t0 = millis();
+    N++;
+  }
+  if ((digitalRead(A1) == 1) && (millis() - t0 > tde)) {                //se spingi basso && debounce -> decrementa tempo iniziale timer 2
+    t0 = millis();
+    N--;
+  }                                                                     //il parametro N diventa ciclico
+  if (N > NMAX) {
+    N = 0;
+  }
+  if (N < 0) {
+    N = NMAX;
+  }
+  lcd.setCursor(3, 0);
+  lcd.print(N);
+  lcd.print("            ");
+};
+void S2() {
+  if (first) {
+    lcd.setCursor(0, 0);
+    lcd.print("t =     s");
+    lcd.setCursor(0, 1);
+    lcd.write((byte)1);                                                 //freccia alto
+    lcd.print(" + ");
+    lcd.write((byte)0);
+    lcd.print(" -       < SET");
+    first = false;
+  }
+  if ((digitalRead(A0) == 1) && (millis() - t0 > tde)) {                //se spingi bottone up -> incrementa tempo
+    t0 = millis();
+    tempo = tempo + passi;
+  }
+  if ((digitalRead(A1) == 1) && (millis() - t0 > tde) ) {               //se spingi bottone basso -> decrementa tempo
+    t0 = millis();
+    tempo = tempo - passi;
+  }
+  if ((digitalRead(A3) == 1) && (millis() - t0 > tde)) {                //se spingi bottone sinistra -> stato S10
+    t0 = millis();
+    setStato(10);
+  }                                                                             //il parametro tempo diventa ciclico
+  if (tempo >= (tempoMAX + passi) && (tempo < (tempoMAX + passi + passi))) {    //compreso nel primo segmento vicino al tempoMAX
+    tempo = 0;
+  }
+  if (tempo <= (4294967296 - passi) && (tempo > (4294967296 - passi - passi))) {  //compreso nel primo segmento vicino al massimo di unsigned long (4294967296)
+    tempo = tempoMAX;
+  }
+  lcd.setCursor(2, 0);
+  lcd.print(tempo);
+  lcd.print("s");
+  lcd.print("                ");
+};
+void S3() {
+  if (first) {                                                          //se è la prima volta che entri in questo menù scrivi le etichette
+    lcd.setCursor(0, 0);
+    lcd.print("Hv =    kV         ");
+    lcd.setCursor(0, 1);
+    lcd.write((byte)1);                                                 //freccia alto
+    lcd.print(" + ");
+    lcd.write((byte)0);
+    lcd.print(" -  > dV  < SET");
+    first = false;
+  }
+  /*
+    leggi i bottoni e muoviti di conseguenza negli sati
+  */
+  if ((digitalRead(A2) == 1) && (millis() - t0 > tde)) {                //se spingi bottone destra -> stato = 8
+    t0 = millis();
+    setStato(8);
+  }
+  if ((digitalRead(A3) == 1) && (millis() - t0 > tde) ) {               //se spingi bottone sinistra -> stato = 20
+    t0 = millis();
+    setStato(20);
+  }
+  if ((digitalRead(A0) == 1) && (millis() - t0 > tde)) {                //se spingi alto -> incrementa voltaggio
+    t0 = millis();
+    voltaggio = voltaggio + 0.5;
+  }
+  if ((digitalRead(A1) == 1) &&  (millis() - t0 > tde)) { //se spingi basso && debounce -> decrementa voltaggio
+    t0 = millis();
+    voltaggio = voltaggio - 0.5;
+  }                                                                     //il parametro voltaggio diventa ciclico
+  if (voltaggio > voltaggioMAX) {
+    voltaggio = 0;
+  }
+  if (voltaggio < 0) {
+    voltaggio = voltaggioMAX;
+  }
+  lcd.setCursor(4, 0);                                                  //riaggiorna di continuo la variabile temporale lasciando immutate le etichette scritte la prima volta che sei entrato in questo menù
+  lcd.print(voltaggio);
+  lcd.print(" kV");
+  lcd.print("                ");
+};
+void S8() {
+  if (first) {
+    lcd.setCursor(0, 0);
+    lcd.print("dV =    kV       ");
+    lcd.setCursor(0, 1);
+    lcd.write((byte)1);                                                 //freccia alto
+    lcd.print(" + ");
+    lcd.write((byte)0);
+    lcd.print(" -  > Hv  < SET");
+    first = false;
+  }
+  if ((digitalRead(A2) == 1) && (millis() - t0 > tde)) {                //se spingi bottone destra -> stato = 3
+    t0 = millis();
+    setStato(3);
+  }
+  if ((digitalRead(A3) == 1) && (millis() - t0 > tde) ) {               //se spingi bottone sinistra -> stato = 20
+    t0 = millis();
+    setStato(20);
+  }
+  if ((digitalRead(A0) == 1) && (millis() - t0 > tde)) {                //se spingi alto -> incrementa dV
+    t0 = millis();
+    dvoltaggio = dvoltaggio + 0.01;
+  }
+  if ((digitalRead(A1) == 1) && (millis() - t0 > tde)) {                //se spingi basso -> decrementa dV
+    t0 = millis();
+    dvoltaggio = dvoltaggio - 0.01;
+  }
+  if (dvoltaggio <= 0) {                                                //non far diventare negativo dV
+    dvoltaggio = 0;
+  }
+  lcd.setCursor(4, 0);
+  lcd.print(dvoltaggio);
+  lcd.print(" kV");
+  lcd.print("                ");
+};
+void S4() {
+  if (first) {
+    lcd.setCursor(0, 0);
+    lcd.print("Q =    mL / h");
+    lcd.setCursor(0, 1);
+    lcd.write((byte)1);                                                   //freccia alto
+    lcd.print(" + ");
+    lcd.write((byte)0);
+    lcd.print(" -  > dQ  < SET");
+    first = false;
+  }
+  if ((digitalRead(A2) == 1) && (millis() - t0 > tde)) {                  //se spingi bottone destra -> stato = 9
+    t0 = millis();
+    setStato(9);
+  }
+  if ((digitalRead(A3) == 1) && (millis() - t0 > tde) ) {                 //se spingi bottone sinistra -> stato = 30
+    t0 = millis();
+    setStato(30);
+  }
+  if ((digitalRead(A0) == 1) && (millis() - t0 > tde)) {                  //se spingi alto -> incrementa portata
+    t0 = millis();
+    portata = portata + 0.01;
+  }
+  if ((digitalRead(A1) == 1) && (millis() - t0 > tde)) {                  //se spingi basso -> decrementa portata
+    t0 = millis();
+    portata = portata - 0.01;
+  }
+  if (portata < 0) {                                                      //non far diventare la portata negativa
+    portata = 0;
+  }
+  lcd.setCursor(2, 0);
+  lcd.print(portata);
+  lcd.print("mL / h");
+  lcd.print("                ");
+};
+void S9() {
+  if (first) {                                                            //se è la prima volta che entri in questo menù scrivi le etichette
+    lcd.setCursor(0, 0);
+    lcd.print("dQ =   mL / h      ");
+    lcd.setCursor(0, 1);
+    lcd.write((byte)1);                                                   //freccia alto
+    lcd.print(" + ");
+    lcd.write((byte)0);
+    lcd.print(" -  > Q   < SET");
+    first = false;
+  }
+  if ((digitalRead(A2) == 1) && (millis() - t0 > tde)) {                  //se spingi bottone destra -> stato = 4
+    t0 = millis();
+    setStato(4);
+  }
+  if ((digitalRead(A3) == 1) && (millis() - t0 > tde)) {                  //se spingi bottone sinistra -> stato = 30
+    t0 = millis();
+    setStato(30);
+  }
+  if ((digitalRead(A1) == 1) && (millis() - t0 > tde) ) {                 //se spingi bottone basso -> decrementa dQ
+    t0 = millis();
+    dportata = dportata - 0.01;
+  }
+  if ((digitalRead(A0) == 1) && (millis() - t0 > tde) ) {                 //se spingi bottone alto -> incrementa dQ
+    t0 = millis();
+    dportata = dportata + 0.01;
+  }
+  if (dportata < 0) dportata = 0;                                         //non far andare dQ negativa
+  lcd.setCursor(3, 0);                                                    //riaggiorna di continuo la variabile dQ lasciando immutate le etichette scritte la prima volta che sei entrato in questo menù
+  lcd.print(dportata);
+  lcd.print("mL / h");
+  lcd.print("                ");
+};
+void S5() {
+  if (first) {
+    lcd.setCursor(0, 0);
+    lcd.print("T =     C H =    % ");
+    lcd.setCursor(0, 1);
+    lcd.print(" < PAUSE     NEXT");
+    lcd.write((byte)0);                                                   //freccia basso
+    first = false;
+  }
+  if ((digitalRead(A3) == 1) && (millis() - t0 > tde)) {                  //se spingi bottone sinistra -> stato = 40
+    t0 = millis();
+    inizio = false;                                                       //azzera tag processo filatura
+    pausa = true;                                                         //inizia la pausa
+    tpausain = millis();                                                  //registra il tempo iniziale di pausa
+    pompa(0);                                                             //SPEGNI POMPA
+    dac.setVoltage(0, false);                                             //spegni alta tensione
+    setStato(40);
+  }
+  if ((digitalRead(A1) == 1) && (millis() - t0 > tde) ) {                 //se spingi bottone basso -> stato = 6
+    t0 = millis();
+    setStato(6);
+  }
+  lcd.setCursor(2, 0);
+  lcd.print(temperatura);
+  lcd.print("C H = ");
+  lcd.print(umidita);                                                     //scritto male di proposito NON CAMBIARE
+  lcd.print(" % ");
+  lcd.print("                ");
+};
+void S6() {
+  if (first) {
+    lcd.setCursor(0, 0);
+    lcd.print("Hv =   kV Q =     ");
+    lcd.setCursor(0, 1);
+    lcd.print(" < PAUSE     NEXT");
+    lcd.write((byte)0);                                                   //freccia basso
+    first = false;
+  }
+  if ((digitalRead(A3) == 1) && (millis() - t0 > tde)) {                  //se spingi bottone sinistra -> stato = 40
+    t0 = millis();
+    inizio = false;                                                       //azzera tag processo filatura
+    pausa = true;
+    tpausain = millis();                                                  //registra il tempo iniziale di pausa
+    pompa(0);                                                             //SPEGNI POMPA
+    dac.setVoltage(0, false);                                             //spegni alta tensione
+    setStato(40);
+  }
+  if ((digitalRead(A1) == 1) && (millis() - t0 > tde) ) {                 //se spingi bottone basso -> stato = 7
+    t0 = millis();
+    setStato(7);
+  }
+  lcd.setCursor(2, 0);
+  lcd.print(((n * dvoltaggio) + voltaggio));                              //voltaggio attuale tenendo conto dell'incremento della prova in svolgimento
+  lcd.print("kV Q");
+  lcd.print(((n * dportata) + portata));                                  //scritto male di proposito NON CAMBIARE
+  lcd.print("                ");
+};
+void S7() {
+  if (first) {
+    lcd.setCursor(0, 0);
+    lcd.print("N =      t =     s");
+    lcd.setCursor(0, 1);
+    lcd.print(" < PAUSE     NEXT");
+    lcd.write((byte)0);                                                   //freccia basso
+    first = false;
+  }
+  if ((digitalRead(A3) == 1) && (millis() - t0 > tde)) {                  //se spingi bottone sinistra -> stato = 40
+    t0 = millis();
+    inizio = false;                                                       //pausa elettrofilatura
+    pausa = true;                                                         //inizia la pausa
+    tpausain = millis();                                                  //registra il tempo iniziale di pausa
+    pompa(0);                                                             //SPEGNI POMPA
+    dac.setVoltage(0, false);                                             //spegni alta tensione
+    setStato(40);
+  }
+  if ((digitalRead(A1) == 1) && (millis() - t0 > tde) ) {                 //se spingi bottone basso -> stato = 5
+    t0 = millis();
+    setStato(5);
+  }
+  lcd.setCursor(3, 0);
+  lcd.print(n);                                                           //n prova in svolgimento
+  lcd.print("    t = ");
+  lcd.print(VARtempo);                                                    //tempo di elettrofilatura che avanza
+  lcd.print(" s               ");
+};
