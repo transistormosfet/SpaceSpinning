@@ -158,6 +158,7 @@ void setup() {
   lcd.clear();
   dac.begin(0x60);        //0x60 indirizzo del clone cinese, 0x62 indirizzo dac originale adafruit
   pwm.begin();            //inizializzazione pwm esterno
+  dac.setVoltage(0, false);             //spegni generatore Hv
   pwm.setOscillatorFrequency(27000000); //27MHz
   pwm.setPWMFreq(SERVO_FREQ);  // Analog servos run at ~50 Hz updates
   delay(10);
