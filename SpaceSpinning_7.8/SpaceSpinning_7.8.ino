@@ -78,7 +78,7 @@ float volumestep = 0.0000804944311857;                                          
 
 unsigned long tde = 300, t0, t1 , tstep, tstep2, tdata;                     //tde = t debounce 300 ms e t0,t1 variabili di servizio per conteggio debounce (t0) e contatore 1s (t1)
 unsigned long deltapausa = 0, tpausain = 0, tpausafin = 0;
-unsigned long tempo = 30;                                                   //variabili tmpo di elettrofilatura in memoria impostate dall'utente
+unsigned long tempo = 60;                                                   //variabili tmpo di elettrofilatura in memoria impostate dall'utente
 unsigned long VARtempo = 0 ;                                                //variabili tempi di elettrofilatura trascorsa che incrementano durante il processo
 unsigned long tstart = 0;                                                   //tempo inizio sequenza temporizzata
 unsigned long tempoMAX = 36000;                                             //tempo max(in secondi) 3600s(secondi in 1 ora) * 10 ore
@@ -458,7 +458,7 @@ void S0() {
     lcd.print("N TESTS         ");                                      //gli spazzi servono per ripulire la riga da eventuali caratteri rimanenti
     lcd.setCursor(0, 1);
     lcd.write((byte)0);                                                 //freccia basso
-    lcd.print("NEXT       > SET");
+    lcd.print("NEXT       >SET");
     first = false;                                                      //cambia il flag per far capire che hai già scritto le etichete
   }
   /*
@@ -480,7 +480,7 @@ void S10() {
     lcd.print("time            ");                                      //gli spazzi servono per ripulire la riga da eventuali caratteri rimanenti
     lcd.setCursor(0, 1);
     lcd.write((byte)0);                                                 //freccia basso
-    lcd.print("NEXT       > SET");
+    lcd.print("NEXT       >SET");
     first = false;                                                      //cambia il flag per far capire che hai già scritto le etichete
   }
   /*
@@ -502,8 +502,8 @@ void S20() {
     lcd.print("HVreg           ");                                      //gli spazzi servono per ripulire la riga da eventuali caratteri rimanenti
     lcd.setCursor(0, 1);
     lcd.write((byte)0);                                                 //freccia basso
-    lcd.print("NEXT       > SET");
-    first = false;                                                      //cambia il flag per far capire che hai già scritto le etichete
+    lcd.print("NEXT       >SET");
+    first = false;                                                       //cambia il flag per far capire che hai già scritto le etichete
   }
   /*
     leggi i bottoni e muoviti di conseguenza tra gli stati
@@ -524,8 +524,8 @@ void S30() {
     lcd.print("FLOW            ");                                      //gli spazzi servono per ripulire la riga da eventuali caratteri rimanenti
     lcd.setCursor(0, 1);
     lcd.write((byte)0);                                                 //freccia basso
-    lcd.print("NEXT       > SET");
-    first = false;                                                      //cambia il flag per far capire che hai già scritto le etichete
+    lcd.print("NEXT       >SET");
+    first = false;                                                  //cambia il flag per far capire che hai già scritto le etichete
   }
   /*
     leggi i bottoni e muoviti di conseguenza tra gli stati
@@ -542,10 +542,10 @@ void S30() {
 void S40() {
   if (first) {                                                          //se è la prima volta che entri in questo menù scrivi le etichette
     lcd.setCursor(0, 0);
-    lcd.print(" START SEQUENCE ? ");                                      //gli spazzi servono per ripulire la riga da eventuali caratteri rimanenti
+    lcd.print(" START SEQUENCE?");                                      //gli spazzi servono per ripulire la riga da eventuali caratteri rimanenti
     lcd.setCursor(0, 1);
     lcd.write((byte)0);                                                 //freccia basso
-    lcd.print("NEXT     > START");
+    lcd.print("NEXT     >START");
     first = false;                                                      //cambia il flag per far capire che hai già scritto le etichete
   }
   /*
@@ -570,12 +570,12 @@ void S40() {
 void S1() {
   if (first) {
     lcd.setCursor(0, 0);
-    lcd.print("N =              ");
+    lcd.print("N=              ");
     lcd.setCursor(0, 1);
     lcd.write((byte)1);                                                 //freccia alto
-    lcd.print(" + ");
+    lcd.print("+ ");
     lcd.write((byte)0);                                                 //freccia basso
-    lcd.print(" -       < SET");
+    lcd.print("-       <SET");
     first = false;
   }
   if ((digitalRead(A3) == 1) && (millis() - t0 > tde)) {                //se spingi bottone sinistra -> stato = 0
@@ -603,12 +603,12 @@ void S1() {
 void S2() {
   if (first) {
     lcd.setCursor(0, 0);
-    lcd.print("t =     s");
+    lcd.print("t=     s");
     lcd.setCursor(0, 1);
     lcd.write((byte)1);                                                 //freccia alto
-    lcd.print(" + ");
+    lcd.print("+ ");
     lcd.write((byte)0);
-    lcd.print(" -       < SET");
+    lcd.print("-       <SET");
     first = false;
   }
   if ((digitalRead(A0) == 1) && (millis() - t0 > tde)) {                //se spingi bottone up -> incrementa tempo
@@ -637,12 +637,12 @@ void S2() {
 void S3() {
   if (first) {                                                          //se è la prima volta che entri in questo menù scrivi le etichette
     lcd.setCursor(0, 0);
-    lcd.print("Hv =    kV         ");
+    lcd.print("Hv=    kV         ");
     lcd.setCursor(0, 1);
     lcd.write((byte)1);                                                 //freccia alto
-    lcd.print(" + ");
+    lcd.print("+ ");
     lcd.write((byte)0);
-    lcd.print(" -  > dV  < SET");
+    lcd.print("-  >dV  <SET");
     first = false;
   }
   /*
@@ -658,11 +658,11 @@ void S3() {
   }
   if ((digitalRead(A0) == 1) && (millis() - t0 > tde)) {                //se spingi alto -> incrementa voltaggio
     t0 = millis();
-    voltaggio = voltaggio + 0.5;
+    voltaggio = voltaggio + 0.1;
   }
   if ((digitalRead(A1) == 1) &&  (millis() - t0 > tde)) { //se spingi basso && debounce -> decrementa voltaggio
     t0 = millis();
-    voltaggio = voltaggio - 0.5;
+    voltaggio = voltaggio - 0.1;
   }                                                                     //il parametro voltaggio diventa ciclico
   if (voltaggio > voltaggioMAX) {
     voltaggio = 0;
@@ -678,12 +678,12 @@ void S3() {
 void S8() {
   if (first) {
     lcd.setCursor(0, 0);
-    lcd.print("dV =    kV       ");
+    lcd.print("dV=    kV       ");
     lcd.setCursor(0, 1);
     lcd.write((byte)1);                                                 //freccia alto
-    lcd.print(" + ");
+    lcd.print("+ ");
     lcd.write((byte)0);
-    lcd.print(" -  > Hv  < SET");
+    lcd.print("-  >Hv  <SET");
     first = false;
   }
   if ((digitalRead(A2) == 1) && (millis() - t0 > tde)) {                //se spingi bottone destra -> stato = 3
@@ -696,11 +696,11 @@ void S8() {
   }
   if ((digitalRead(A0) == 1) && (millis() - t0 > tde)) {                //se spingi alto -> incrementa dV
     t0 = millis();
-    dvoltaggio = dvoltaggio + 0.01;
+    dvoltaggio = dvoltaggio + 0.1;
   }
   if ((digitalRead(A1) == 1) && (millis() - t0 > tde)) {                //se spingi basso -> decrementa dV
     t0 = millis();
-    dvoltaggio = dvoltaggio - 0.01;
+    dvoltaggio = dvoltaggio - 0.1;
   }
   if (dvoltaggio <= 0) {                                                //non far diventare negativo dV
     dvoltaggio = 0;
@@ -713,12 +713,12 @@ void S8() {
 void S4() {
   if (first) {
     lcd.setCursor(0, 0);
-    lcd.print("Q =    mL / h");
+    lcd.print("Q=    mL/h");
     lcd.setCursor(0, 1);
     lcd.write((byte)1);                                                   //freccia alto
-    lcd.print(" + ");
+    lcd.print("+ ");
     lcd.write((byte)0);
-    lcd.print(" -  > dQ  < SET");
+    lcd.print("-  >dQ  <SET");
     first = false;
   }
   if ((digitalRead(A2) == 1) && (millis() - t0 > tde)) {                  //se spingi bottone destra -> stato = 9
@@ -731,29 +731,29 @@ void S4() {
   }
   if ((digitalRead(A0) == 1) && (millis() - t0 > tde)) {                  //se spingi alto -> incrementa portata
     t0 = millis();
-    portata = portata + 0.01;
+    portata = portata + 0.05;
   }
   if ((digitalRead(A1) == 1) && (millis() - t0 > tde)) {                  //se spingi basso -> decrementa portata
     t0 = millis();
-    portata = portata - 0.01;
+    portata = portata - 0.05;
   }
   if (portata < 0) {                                                      //non far diventare la portata negativa
     portata = 0;
   }
   lcd.setCursor(2, 0);
   lcd.print(portata);
-  lcd.print("mL / h");
+  lcd.print("mL/h");
   lcd.print("                ");
 };
 void S9() {
   if (first) {                                                            //se è la prima volta che entri in questo menù scrivi le etichette
     lcd.setCursor(0, 0);
-    lcd.print("dQ =   mL / h      ");
+    lcd.print("dQ=   mL/h      ");
     lcd.setCursor(0, 1);
     lcd.write((byte)1);                                                   //freccia alto
-    lcd.print(" + ");
+    lcd.print("+ ");
     lcd.write((byte)0);
-    lcd.print(" -  > Q   < SET");
+    lcd.print("-  >Q   <SET");
     first = false;
   }
   if ((digitalRead(A2) == 1) && (millis() - t0 > tde)) {                  //se spingi bottone destra -> stato = 4
@@ -775,15 +775,15 @@ void S9() {
   if (dportata < 0) dportata = 0;                                         //non far andare dQ negativa
   lcd.setCursor(3, 0);                                                    //riaggiorna di continuo la variabile dQ lasciando immutate le etichette scritte la prima volta che sei entrato in questo menù
   lcd.print(dportata);
-  lcd.print("mL / h");
+  lcd.print("mL/h");
   lcd.print("                ");
 };
 void S5() {
   if (first) {
     lcd.setCursor(0, 0);
-    lcd.print("T =     C H =    % ");
+    lcd.print("T=     C H=    %");
     lcd.setCursor(0, 1);
-    lcd.print(" < PAUSE     NEXT");
+    lcd.print("<PAUSE     NEXT");
     lcd.write((byte)0);                                                   //freccia basso
     first = false;
   }
@@ -802,17 +802,17 @@ void S5() {
   }
   lcd.setCursor(2, 0);
   lcd.print(temperatura);
-  lcd.print("C H = ");
+  lcd.print("C H=");
   lcd.print(umidita);                                                     //scritto male di proposito NON CAMBIARE
-  lcd.print(" % ");
+  lcd.print(" %");
   lcd.print("                ");
 };
 void S6() {
   if (first) {
     lcd.setCursor(0, 0);
-    lcd.print("Hv =   kV Q =     ");
+    lcd.print("Hv=   kV Q=     ");
     lcd.setCursor(0, 1);
-    lcd.print(" < PAUSE     NEXT");
+    lcd.print("<PAUSE     NEXT");
     lcd.write((byte)0);                                                   //freccia basso
     first = false;
   }
@@ -838,9 +838,9 @@ void S6() {
 void S7() {
   if (first) {
     lcd.setCursor(0, 0);
-    lcd.print("N =      t =     s");
+    lcd.print("N=      t=     s");
     lcd.setCursor(0, 1);
-    lcd.print(" < PAUSE     NEXT");
+    lcd.print("<PAUSE     NEXT");
     lcd.write((byte)0);                                                   //freccia basso
     first = false;
   }
@@ -859,7 +859,7 @@ void S7() {
   }
   lcd.setCursor(3, 0);
   lcd.print(n);                                                           //n prova in svolgimento
-  lcd.print("    t = ");
+  lcd.print("    t=");
   lcd.print(VARtempo);                                                    //tempo di elettrofilatura che avanza
   lcd.print(" s               ");
 };
