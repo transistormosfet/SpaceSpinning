@@ -1,4 +1,4 @@
-#LIBRERIE PER SPACESPINNING 
+# LIBRERIE PER SPACESPINNING 
    
 LCD_I2C blackhack 2.2.0  
 LiquidCrystal I2C by Frank de Brabander 1.1.2  

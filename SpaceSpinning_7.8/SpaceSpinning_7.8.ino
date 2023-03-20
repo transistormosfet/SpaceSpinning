@@ -393,7 +393,7 @@ void nastro() {
     if (((millis() - tstep) > 2)) {                                    //esegui ogni 2 ms
       tstep = millis();                                                 //resetta variabile ausiliaria
       i++;                                                              //incrementa i di 1
-      digitalWrite(13, HIGH);                                            //gira in senso orario di 1 step per volta;
+      digitalWrite(13, LOW);                                            //gira in senso orario di 1 step per volta;
       digitalWrite(9, HIGH);
       digitalWrite(9, LOW);
     }
