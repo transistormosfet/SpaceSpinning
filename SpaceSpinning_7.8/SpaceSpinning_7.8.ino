@@ -70,7 +70,7 @@ int n = 0;                                                                  //sc
 int NMAX = 5;                                                               //numero max di prove da definire
 
 float voltaggio = 10.0;
-float voltaggioMAX = 30.0;                                                  //voltaggio massimo da definire kV
+float voltaggioMAX = 20.0;                                                  //voltaggio massimo da definire kV
 int PWM;
 float portata = 1;                                                          //portata in mL/h
 float portataMAX;                                                           //portata massima da definire
@@ -120,8 +120,8 @@ void setup() {
   pinMode(9, OUTPUT);                                                       //dir  pin motore
   pinMode(12, OUTPUT);                                                      //step pin motore
   pinMode(11, OUTPUT);                                                      //dir pin motore
-  pinMode(10, OUTPUT);                                                      //pin del relè che stacca a monte l'uscita del dac
-  digitalWrite(10,LOW);                                                    //stacca il relè
+  pinMode(6, OUTPUT);                                                      //pin del relè che stacca a monte l'uscita del dac
+  digitalWrite(6,LOW);                                                    //stacca il relè
   //  motore.setSpeed(60);                                                        //setta velocità motore rpm
   //  myservo.attach(10);                                                       //definisci pin servo
   //  myservo.write(0);                                                         //sblocco sportello
@@ -161,7 +161,7 @@ void setup() {
   dac.begin(0x60);        //0x60 indirizzo del clone cinese, 0x62 indirizzo dac originale adafruit
   pwm.begin();            //inizializzazione pwm esterno
   dac.setVoltage(0, false);             //spegni generatore Hv
-  pinMode(10,HIGH);                     //accendi il relè
+  digitalWrite(6,HIGH);                     //accendi il relè
   pwm.setOscillatorFrequency(27000000); //27MHz
   pwm.setPWMFreq(SERVO_FREQ);  // Analog servos run at ~50 Hz updates
   delay(10);
