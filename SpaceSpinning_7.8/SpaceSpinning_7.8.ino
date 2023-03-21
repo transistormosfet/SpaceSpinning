@@ -44,7 +44,7 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();                    //cr
 
 #define SERVOMIN  150 // This is the 'minimum' pulse length count (out of 4096)
 #define SERVOMAX  600 // This is the 'maximum' pulse length count (out of 4096)
-#define SERVO_FREQ 50 // Analog servos run at ~50 Hz updates
+#define SERVO_FREQ 60 // Analog servos run at ~60 Hz updates
 
 File logfile;                                                               //creazione oggetto logfile (default)
 
@@ -112,21 +112,25 @@ void setup() {
   pinMode(A1, INPUT);                                                       //down sw
   pinMode(A2, INPUT);                                                       //dx sw
   pinMode(A3, INPUT);                                                       //sx sw
-  pinMode(A4, INPUT);                                                 //Bottone fast forward premuto-> HIHG
-  pinMode(A5, INPUT);                                                 //Bottone fast rewind premuto-> HIGH
+  pinMode(A4, INPUT);                                                       //Bottone fast forward premuto-> HIHG
+  pinMode(A5, INPUT);                                                       //Bottone fast rewind premuto-> HIGH
   pinMode(8, INPUT_PULLUP);                                                 //Bottone STOP premuto-> LOW
   pinMode(7, OUTPUT);                                                       //LED STOP
   pinMode(13, OUTPUT);                                                      //step pin motore
   pinMode(9, OUTPUT);                                                       //dir  pin motore
   pinMode(12, OUTPUT);                                                      //step pin motore
   pinMode(11, OUTPUT);                                                      //dir pin motore
-  pinMode(6, OUTPUT);                                                      //pin del relè che stacca a monte l'uscita del dac
-  digitalWrite(6,LOW);                                                    //stacca il relè
-  //  motore.setSpeed(60);                                                        //setta velocità motore rpm
-  //  myservo.attach(10);                                                       //definisci pin servo
-  //  myservo.write(0);                                                         //sblocco sportello
-  pwm.setPWM(0, 0, 0);                                                          //sblocco sportello (numero servo,inizio impulso,fine impulso);
-
+  pinMode(6, OUTPUT);                                                       //pin del relè che stacca a monte l'uscita del dac
+  pinMode(5, OUTPUT);                                                       //pin del relè ausiliario
+  digitalWrite(5,LOW);                                                      //tieni spento il relè ausiliario
+  digitalWrite(6,LOW);                                                      //stacca il relè
+  //  motore.setSpeed(60);                                                  //setta velocità motore rpm
+  //  myservo.attach(10);                                                   //definisci pin servo
+  //  myservo.write(0);                                                     //sblocco sportello
+  pwm.setPWM(0, 0,SERVOMIN);                                                //sblocco sportello (numero servo,inizio impulso,fine impulso);
+  pwm.setPWM(1, 0,SERVOMIN);                                                //sblocco sportello (numero servo,inizio impulso,fine impulso);
+  pwm.setPWM(2, 0,SERVOMIN);                                                //sblocco sportello (numero servo,inizio impulso,fine impulso);
+  
   Wire.begin();                                                             //inizializza I2C
   rtc.begin();                                                              //inizializza Real Time Clock
   if (!rtc.isrunning()) {                                                   //se prima volta funzionamento RTC
@@ -285,7 +289,9 @@ void loop() {
         VARtempo = (millis() - (tstart + deltapausa)) / 1000;           //refresh valore dell'indicatore di tempo
       }
       //      myservo.write(90);                                                //blocca portello
-      pwm.setPWM(0, 0, 4096);                                           //4096 valore massimo (da rivedere il valore per 90°)
+      pwm.setPWM(0, 0, SERVOMAX);                                           // valore massimo (da rivedere il valore per 90°)
+      pwm.setPWM(1, 0, SERVOMAX);                                           // valore massimo (da rivedere il valore per 90°)
+      pwm.setPWM(2, 0, SERVOMAX);                                           // valore massimo (da rivedere il valore per 90°)
       PWM = ((((n * dvoltaggio) + voltaggio) / voltaggioMAX) * 4095);   //restituisce il valore per il dac 12bit (da 0 a (2^12)-1 ) a seconda anche del numero della prova n (1^, 2^,ecc..)
       if (PWM > 4095) PWM = 4095;                                       //valore max accettato di pwm è 4095 = (2^12)-1
       dac.setVoltage(PWM, false);                                       //regola gen Hv
@@ -309,7 +315,9 @@ void loop() {
       if ((millis() - t0) > tsicurezza) {                               //per aspettare il tempo di sicurezza scarica Hv (2,5s)
         t0 = millis();
         //        myservo.write(0);                                               //sblocco sportello
-        pwm.setPWM(0, 0, 0);
+        pwm.setPWM(0, 0, SERVOMIN);
+        pwm.setPWM(1, 0, SERVOMIN);
+        pwm.setPWM(2, 0, SERVOMIN);
         inizio = false;                                                 //resetto flag inizio filatura
         n = 0;                                                          //resetto contatore ausiliario di prove
         VARtempo = 0;                                                   //resetto contatore tempo trascorso
@@ -328,7 +336,9 @@ void loop() {
       nastro();                                                         //muovi il nastro (scarta il campione automaticamente)
     }
     //    myservo.write(0);                                                   //sblocco sportello
-    pwm.setPWM(0, 0, 0);
+    pwm.setPWM(0, 0, SERVOMIN);
+    pwm.setPWM(1, 0, SERVOMIN);
+    pwm.setPWM(2, 0, SERVOMIN);
     digitalWrite(7, HIGH);                                              //led STOP acceso
   }
   else if (sicurezza)  {
