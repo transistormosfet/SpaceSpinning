@@ -101,7 +101,7 @@ DHT_Unified dht(DHTPIN, DHTTYPE);
 Adafruit_MCP4725 dac;                                                       //definisco l'oggetto dac per il generatore Hv
 #define DAC_RESOLUTION (8)
 
-//Stepper motore(stepspergiro, 13, 9);                                         //pin Arduino-> 13,9
+//Stepper motore(stepspergiro, 9, 13);                                         //pin Arduino-> 13,9
 //Stepper motore2(stepspergiro, 12, 11);                                      //pin Arduino-> 11->DIR | 12(PWM)-> STEP POMPA
 
 void setup() {
@@ -407,9 +407,9 @@ void nastro() {
     if (((millis() - tstep) > 2)) {                                    //esegui ogni 2 ms
       tstep = millis();                                                 //resetta variabile ausiliaria
       i++;                                                              //incrementa i di 1
-      digitalWrite(13, LOW);                                            //gira in senso orario di 1 step per volta;
-      digitalWrite(9, HIGH);
-      digitalWrite(9, LOW);
+      digitalWrite(9, LOW);                                            //gira in senso orario di 1 step per volta;
+      digitalWrite(13, HIGH);
+      digitalWrite(13, LOW);
     }
   }
   i = 0;                                                                //finito il ciclo azzera contatore
